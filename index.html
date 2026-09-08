@@ -1,0 +1,952 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soil Health Conservation Planning Tool</title>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f7f8;
+      color: #222;
+    }
+
+    header {
+      background: #1b5e20;
+      color: #fff;
+      padding: 1rem 1.5rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.6rem;
+    }
+
+    header p {
+      margin: 0.3rem 0 0;
+      font-size: 0.95rem;
+      opacity: 0.9;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1.05fr 1fr;
+      gap: 1rem;
+      padding: 1rem 1.5rem 2rem;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.10);
+      padding: 1rem 1.25rem 1.25rem;
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 0.4rem;
+      color: #1b5e20;
+    }
+
+    .indicator-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.5rem 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .indicator {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.45rem;
+      font-size: 0.92rem;
+    }
+
+    .indicator input {
+      margin-top: 0.18rem;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 0.22rem 0.55rem;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      margin: 0.12rem 0.22rem 0.12rem 0;
+    }
+
+    .tag.constraint {
+      background: #e3f2fd;
+      color: #0d47a1;
+    }
+
+    .tag.practice {
+      background: #fff3e0;
+      color: #e65100;
+    }
+
+    .section-note {
+      font-size: 0.82rem;
+      color: #666;
+      margin-top: 0.3rem;
+      line-height: 1.4;
+    }
+
+    .summary-list {
+      font-size: 0.9rem;
+      margin: 0.4rem 0 0;
+      padding-left: 1.2rem;
+    }
+
+    .summary-list li {
+      margin-bottom: 0.25rem;
+    }
+
+    .pill-heading {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #555;
+      margin-top: 0.85rem;
+    }
+
+    .output-container {
+      margin-top: 0.4rem;
+      min-height: 1.5rem;
+    }
+
+    .footer-note {
+      font-size: 0.8rem;
+      color: #777;
+      margin-top: 1rem;
+      border-top: 1px dashed #ddd;
+      padding-top: 0.65rem;
+      line-height: 1.4;
+    }
+
+    .btn-row {
+      margin-top: 0.9rem;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    button {
+      border-radius: 4px;
+      border: 1px solid #1b5e20;
+      background: #1b5e20;
+      color: #fff;
+      padding: 0.4rem 0.85rem;
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: #fff;
+      color: #1b5e20;
+    }
+
+    button.print-button {
+      background: #1565c0;
+      border-color: #1565c0;
+    }
+
+    .chips-row {
+      margin-top: 0.6rem;
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    .chips-row span {
+      display: inline-block;
+      margin-right: 0.4rem;
+      margin-bottom: 0.25rem;
+      padding: 0.18rem 0.45rem;
+      border-radius: 999px;
+      border: 1px solid #ddd;
+      background: #fafafa;
+    }
+
+    .print-info {
+      display: none;
+    }
+
+    .print-title {
+      display: none;
+    }
+
+    @media print {
+
+      @page {
+        size: letter;
+        margin: 0.6in;
+      }
+
+      body {
+        background: #fff;
+        color: #000;
+        font-family: Arial, sans-serif;
+      }
+
+      header,
+      #panel-observations,
+      .screen-only {
+        display: none !important;
+      }
+
+      main {
+        display: block;
+        padding: 0;
+      }
+
+      #panel-results {
+        display: block;
+        width: 100%;
+        box-shadow: none;
+        border-radius: 0;
+        padding: 0;
+      }
+
+      #panel-results > h2 {
+        display: none;
+      }
+
+      .print-title {
+        display: block;
+        text-align: center;
+        margin-bottom: 1.2rem;
+      }
+
+      .print-title h1 {
+        margin: 0;
+        font-size: 20pt;
+        color: #000;
+      }
+
+      .print-title p {
+        margin: 0.25rem 0 0;
+        font-size: 10pt;
+        color: #444;
+      }
+
+      .print-info {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.6rem 1.5rem;
+        border: 1px solid #bbb;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+        font-size: 10pt;
+      }
+
+      .print-info p {
+        margin: 0;
+      }
+
+      .pill-heading {
+        margin-top: 1rem;
+        font-size: 10pt;
+        color: #000;
+        border-bottom: 1px solid #999;
+        padding-bottom: 0.2rem;
+      }
+
+      .tag {
+        display: none;
+      }
+
+      .output-container {
+        display: none;
+      }
+
+      .summary-list {
+        display: block !important;
+        font-size: 10pt;
+        margin-top: 0.35rem;
+      }
+
+      .summary-list li {
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+
+      .summary-list li {
+        margin-bottom: 0.2rem;
+      }
+
+      .footer-note {
+        color: #444;
+        border-top: 1px solid #999;
+        margin-top: 1.2rem;
+        font-size: 8.5pt;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>Soil Health Conservation Planning Tool</h1>
+  <p>NRCS / Extension Decision Support Tool</p>
+</header>
+
+<main>
+
+  <section class="panel" id="panel-observations">
+    <h2>Field Observations</h2>
+
+    <p class="section-note">
+      Select the indicators observed during the field assessment.
+      The tool will identify likely soil constraints and relevant
+      NRCS conservation practices.
+    </p>
+
+    <div class="indicator-group">
+
+      <label class="indicator">
+        <input type="checkbox" value="soil_cover" class="indicator-input">
+        <span>Minimal soil cover / bare soil</span>
+      </label>
+
+      <label class="indicator">
+        <input type="checkbox" value="erosion" class="indicator-input">
+        <span>Visible erosion / soil loss</span>
+      </label>
+
+      <label class="indicator">
+        <input type="checkbox" value="crusting" class="indicator-input">
+        <span>Surface crusting / sealing</span>
+      </label>
+
+      <label class="indicator">
+        <input type="checkbox" value="ponding" class="indicator-input">
+        <span>Ponding or slow infiltration</span>
+      </label>
+
+      <label class="indicator">
+        <input type="checkbox" value="penetration" class="indicator-input">
+        <span>Compaction</span>
+      </label>
+
+      <label class="indicator">
+        <input type="checkbox" value="agg_stability" class="indicator-input">
+        <span>Low aggregate stability</span>
+      </label>
+
+      <label class="indicator">
+        <input type="checkbox" value="structure" class="indicator-input">
+        <span>Poor soil structure</span>
+      </label>
+
+      <label class="indicator">
+        <input type="checkbox" value="roots" class="indicator-input">
+        <span>Shallow or deformed roots</span>
+      </label>
+
+      <label class="indicator">
+        <input type="checkbox" value="biology" class="indicator-input">
+        <span>Low biological diversity</span>
+      </label>
+
+      <label class="indicator">
+        <input type="checkbox" value="biopores" class="indicator-input">
+        <span>Few visible biopores</span>
+      </label>
+
+    </div>
+
+    <div class="btn-row">
+      <button type="button" id="btn-update">Update Summary</button>
+      <button type="button" id="btn-clear" class="secondary">Clear</button>
+    </div>
+
+    <div class="chips-row" id="selected-indicators"></div>
+  </section>
+
+
+  <section class="panel" id="panel-results">
+
+    <div class="print-title">
+      <h1>Soil Health Conservation Planning Summary</h1>
+      <p>Arkansas Soil Health Planning Tool</p>
+    </div>
+
+    <div class="print-info">
+      <p><strong>Producer:</strong> __________________________</p>
+      <p><strong>Date:</strong> ______________________________</p>
+      <p><strong>Field:</strong> _____________________________</p>
+      <p><strong>Planner:</strong> ___________________________</p>
+    </div>
+
+    <h2>Planning Summary</h2>
+
+    <div class="pill-heading">Likely Soil Constraints</div>
+    <div class="output-container" id="constraints-container"></div>
+    <ul class="summary-list" id="constraints-list"></ul>
+
+    <div class="pill-heading">Recommended NRCS Conservation Practices</div>
+    <div class="output-container" id="practices-container"></div>
+    <ul class="summary-list" id="practices-list"></ul>
+
+    <div class="btn-row screen-only">
+      <button type="button" id="btn-print" class="print-button">Print Summary</button>
+    </div>
+
+    <div class="footer-note">
+      This tool is a screening and conservation planning aid, not a confirmed
+      diagnosis or prescription. Field observations should be interpreted
+      with soil testing, management history, local conditions, and applicable
+      current Arkansas NRCS Field Office Technical Guide (FOTG), site-specific
+      erosion-risk estimates, and applicable conservation practice standards before
+      conservation practices are finalized.
+    </div>
+
+  </section>
+
+</main>
+
+
+<script>
+
+  const INDICATOR_MAP = {
+
+    soil_cover: {
+      label: "Minimal soil cover / bare soil",
+
+      constraints: [
+        "Erosion",
+        "Low soil organic matter (SOM)",
+        "Surface crusting",
+        "Poor infiltration"
+      ],
+
+      practices: [
+        "328 Conservation Crop Rotation",
+        "340 Cover Crop",
+        "345 Residue & Tillage Management, Reduced-Till",
+        "484 Mulching"
+      ]
+    },
+
+
+    erosion: {
+      label: "Visible erosion / soil loss",
+
+      constraints: [
+        "Erosion"
+      ],
+
+      practices: [
+        "328 Conservation Crop Rotation",
+        "329 Residue & Tillage Management, No-Till",
+        "340 Cover Crop",
+        "345 Residue & Tillage Management, Reduced-Till"
+      ]
+    },
+
+
+    crusting: {
+      label: "Surface crusting / sealing",
+
+      constraints: [
+        "Surface crusting",
+        "Poor infiltration",
+        "Low aggregate stability"
+      ],
+
+      practices: [
+        "340 Cover Crop",
+        "345 Residue & Tillage Management, Reduced-Till",
+        "484 Mulching"
+      ]
+    },
+
+
+    ponding: {
+      label: "Ponding or slow infiltration",
+
+      constraints: [
+        "Poor infiltration",
+        "Compaction",
+        "Poor drainage / aeration",
+        "Salinity / sodicity concern"
+      ],
+
+      practices: [
+        "329 Residue & Tillage Management, No-Till",
+        "340 Cover Crop (deep-rooted species)",
+        "449 Irrigation Water Management",
+        "610 Salinity Management"
+      ]
+    },
+
+
+    penetration: {
+      label: "Compaction",
+
+      constraints: [
+        "Compaction",
+        "Restricted rooting",
+        "Poor infiltration"
+      ],
+
+      practices: [
+        "329 Residue & Tillage Management, No-Till",
+        "334 Controlled Traffic Farming",
+        "340 Cover Crop (deep-rooted species)"
+      ]
+    },
+
+
+    agg_stability: {
+      label: "Low aggregate stability",
+
+      constraints: [
+        "Low aggregate stability",
+        "Erosion",
+        "Low soil organic matter (SOM)"
+      ],
+
+      practices: [
+        "328 Conservation Crop Rotation",
+        "340 Cover Crop",
+        "345 Residue & Tillage Management, Reduced-Till",
+        "484 Mulching"
+      ]
+    },
+
+
+    structure: {
+      label: "Poor soil structure",
+
+      constraints: [
+        "Compaction",
+        "Low aggregate stability",
+        "Poor infiltration",
+        "Restricted rooting"
+      ],
+
+      practices: [
+        "328 Conservation Crop Rotation",
+        "329 Residue & Tillage Management, No-Till",
+        "334 Controlled Traffic Farming",
+        "340 Cover Crop"
+      ]
+    },
+
+
+    roots: {
+      label: "Shallow or deformed roots",
+
+      constraints: [
+        "Compaction",
+        "Restricted rooting",
+        "Soil pH limitation",
+        "Salinity / sodicity concern",
+        "Potential nematode pressure"
+      ],
+
+      practices: [
+        "340 Cover Crop (biofumigant species)",
+        "590 Nutrient Management",
+        "595 Integrated Pest Management"
+      ]
+    },
+
+
+    biology: {
+      label: "Low biological diversity",
+
+      constraints: [
+        "Low soil biological activity",
+        "Low soil organic matter (SOM)"
+      ],
+
+      practices: [
+        "328 Conservation Crop Rotation",
+        "329 Residue & Tillage Management, No-Till",
+        "340 Cover Crop"
+      ]
+    },
+
+
+    biopores: {
+      label: "Few visible biopores",
+
+      constraints: [
+        "Compaction",
+        "Restricted rooting",
+        "Low soil biological activity"
+      ],
+
+      practices: [
+        "329 Residue & Tillage Management, No-Till",
+        "340 Cover Crop (deep-rooted species)"
+      ]
+    }
+  };
+
+
+  /*
+    Constraints represented directly or essentially directly
+    by each field observation.
+
+    When an observation is selected, these equivalent constraints
+    will not be repeated under "Likely Soil Constraints".
+  */
+
+  const OBSERVATION_CONSTRAINT_EQUIVALENTS = {
+
+    soil_cover: [
+      "Minimal soil cover / bare soil"
+    ],
+
+    erosion: [],
+
+    crusting: [
+      "Surface crusting"
+    ],
+
+    ponding: [
+      "Poor infiltration"
+    ],
+
+    penetration: [
+      "Compaction"
+    ],
+
+    agg_stability: [
+      "Low aggregate stability"
+    ],
+
+    structure: [
+      "Poor soil structure"
+    ],
+
+    roots: [
+      "Restricted rooting"
+    ],
+
+    biology: [
+      "Low soil biological activity"
+    ],
+
+    biopores: [
+      "Few visible biopores"
+    ]
+  };
+
+
+  const indicatorInputs =
+    document.querySelectorAll(".indicator-input");
+
+  const btnUpdate =
+    document.getElementById("btn-update");
+
+  const btnClear =
+    document.getElementById("btn-clear");
+
+  const btnPrint =
+    document.getElementById("btn-print");
+
+  const selectedIndicatorsRow =
+    document.getElementById("selected-indicators");
+
+  const constraintsContainer =
+    document.getElementById("constraints-container");
+
+  const practicesContainer =
+    document.getElementById("practices-container");
+
+  const constraintsList =
+    document.getElementById("constraints-list");
+
+  const practicesList =
+    document.getElementById("practices-list");
+
+
+  function getSelectedIndicators() {
+
+    return Array.from(indicatorInputs)
+      .filter(input => input.checked)
+      .map(input => input.value);
+
+  }
+
+
+  function uniqueSorted(items) {
+
+    return [...new Set(items)]
+      .sort((a, b) => a.localeCompare(b));
+
+  }
+
+
+  function renderSelectedIndicators() {
+
+    const selected = getSelectedIndicators();
+
+    selectedIndicatorsRow.innerHTML = "";
+
+    if (selected.length === 0) {
+
+      selectedIndicatorsRow.textContent =
+        "No indicators selected.";
+
+      return;
+    }
+
+    selected.forEach(key => {
+
+      const chip =
+        document.createElement("span");
+
+      chip.textContent =
+        INDICATOR_MAP[key].label;
+
+      selectedIndicatorsRow.appendChild(chip);
+
+    });
+
+  }
+
+
+  function renderOutput(
+    items,
+    container,
+    list,
+    tagClass,
+    emptyMessage = ""
+  ) {
+
+    container.innerHTML = "";
+    list.innerHTML = "";
+
+    if (items.length === 0) {
+
+      if (emptyMessage) {
+        container.textContent = emptyMessage;
+      }
+
+      return;
+    }
+
+    items.forEach(item => {
+
+      const tag =
+        document.createElement("span");
+
+      tag.className =
+        `tag ${tagClass}`;
+
+      tag.textContent = item;
+
+      container.appendChild(tag);
+
+
+      const li =
+        document.createElement("li");
+
+      li.textContent = item;
+
+      list.appendChild(li);
+
+    });
+
+  }
+
+
+  function updateSummary() {
+
+    const selected =
+      getSelectedIndicators();
+
+    const allConstraints = [];
+    const allPractices = [];
+
+
+    selected.forEach(key => {
+
+      const item =
+        INDICATOR_MAP[key];
+
+      if (!item) return;
+
+      allConstraints.push(
+        ...item.constraints
+      );
+
+      allPractices.push(
+        ...item.practices
+      );
+
+    });
+
+
+    /*
+      Build a list of constraints that are redundant because
+      they are already represented by selected field observations.
+    */
+
+    const redundantConstraints =
+      new Set();
+
+
+    selected.forEach(key => {
+
+      const equivalents =
+        OBSERVATION_CONSTRAINT_EQUIVALENTS[key] || [];
+
+      equivalents.forEach(constraint => {
+
+        redundantConstraints.add(constraint);
+
+      });
+
+    });
+
+
+    /*
+      Remove redundant constraints before sorting and
+      removing duplicate constraints.
+    */
+
+    const constraints =
+      uniqueSorted(
+        allConstraints.filter(
+          constraint =>
+            !redundantConstraints.has(constraint)
+        )
+      );
+
+
+    const practices =
+      uniqueSorted(allPractices);
+
+
+    if (selected.length === 0) {
+
+      renderOutput(
+        [],
+        constraintsContainer,
+        constraintsList,
+        "constraint",
+        "Select one or more field observations to see likely soil constraints."
+      );
+
+      renderOutput(
+        [],
+        practicesContainer,
+        practicesList,
+        "practice",
+        "Recommended NRCS conservation practices will appear here."
+      );
+
+      return;
+    }
+
+
+    renderOutput(
+      constraints,
+      constraintsContainer,
+      constraintsList,
+      "constraint"
+    );
+
+
+    renderOutput(
+      practices,
+      practicesContainer,
+      practicesList,
+      "practice"
+    );
+
+  }
+
+
+  function clearSelections() {
+
+    indicatorInputs.forEach(input => {
+
+      input.checked = false;
+
+    });
+
+    renderSelectedIndicators();
+
+    updateSummary();
+
+  }
+
+
+  indicatorInputs.forEach(input => {
+
+    input.addEventListener(
+      "change",
+      renderSelectedIndicators
+    );
+
+  });
+
+
+  btnUpdate.addEventListener(
+    "click",
+    updateSummary
+  );
+
+
+  btnClear.addEventListener(
+    "click",
+    clearSelections
+  );
+
+
+  function printSummary() {
+
+    // Make sure the printed summary reflects the latest checkbox selections.
+    updateSummary();
+    renderSelectedIndicators();
+
+    const selected = getSelectedIndicators();
+
+    if (selected.length === 0) {
+      alert(
+        "Please select at least one field observation before printing the summary."
+      );
+      return;
+    }
+
+    // Allow the DOM to finish rendering the updated lists before opening
+    // the browser print dialog. This avoids blank/stale print previews.
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        window.print();
+      });
+    });
+  }
+
+
+  btnPrint.addEventListener(
+    "click",
+    printSummary
+  );
+
+
+  clearSelections();
+
+</script>
+
+</body>
+</html>
